@@ -1,0 +1,79 @@
+{% extends "inventory/base.html" %}
+
+{% block content %}
+    {% comment %} If there are any messges that exist {% endcomment %}
+    {% if messages %}
+        <div class="row mt-3">
+            {% comment %} For each message {% endcomment %}
+            {% for message in messages %}
+                {% comment %} Show if message is an error message {% endcomment %}
+                {% if message.tags == 'error' %}
+                    <div class="col-md-10 col-12 mx-auto alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="col-md-10 col-12 mx-auto alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-10 col-12 mx-auto mt-5">
+            <div class="d-flex justify-content-end">
+                <a href="{% url "add-item" %}" class="btn btn-primary">+</a>
+            </div>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Qty</th>
+                        <th scope="col">Category</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% comment %} Show empty table if no items exist {% endcomment %}
+                    {% if items|length == 0 %}
+                        <tr>
+                            <th scope="row">-</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td></td>
+                        </tr>
+                    {% endif %}
+
+                    {% for item in items %}
+                        <tr class="">
+                            <th scope="row">{{ item.id }}</th>
+                            <td>{{ item.name }}</td>
+                            {% if item.id in low_inventory_ids %}
+                                {% comment %} Make text red if quantity is low {% endcomment %}
+                                <td class="text-danger">{{ item.quantity }}</td>
+                            {% else %}
+                                {% comment %} Make text green if quantity is not low {% endcomment %}
+                                <td class="text-success">{{ item.quantity }}</td>
+                            {% endif %}
+                            <td>{{ item.category.name }}</td>
+                            <td>
+                                <a href="{% url "edit-item" item.id %}" class="btn btn-outline-secondary">Edit</a>
+                            </td>
+                            <td>
+                                <a href="{% url "delete-item" item.id %}" class="btn btn-secondary">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock content %}
